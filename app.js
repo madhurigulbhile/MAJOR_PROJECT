@@ -27,18 +27,24 @@ const app = express();
 // MongoDB Atlas Connection
 // =====================
 const dbUrl = process.env.ATLASDB_URL;
+const secret = process.env.SECRET || "thisshouldbeabettersecret";
 
 async function connectDB() {
   try {
     await mongoose.connect(dbUrl, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      serverSelectionTimeoutMS: 5000, // Timeout after 5s
+      serverSelectionTimeoutMS: 5000,
     });
     console.log("✅ Connected to MongoDB Atlas");
+
+    // ✅ Start server only after DB connection
+    const PORT = process.env.PORT || 8080;
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+    });
   } catch (err) {
     console.error("❌ MongoDB connection error:", err);
-    process.exit(1); // Exit if connection fails
   }
 }
 
@@ -59,20 +65,18 @@ app.use(express.static(path.join(__dirname, "public")));
 // Session & Flash
 // =====================
 const store = MongoStore.create({
-  mongoUrl : dbUrl,
-  crypto : {
-    secret:process.env.SECRET,
-  },
-  touchAfter : 24 * 3600,
+  mongoUrl: dbUrl,
+  crypto: { secret },
+  touchAfter: 24 * 3600,
 });
 
-store.on("error",()=>{
-  console.log("Error in mongo session store", err);
+store.on("error", (err) => {
+  console.log("⚠️ Error in Mongo session store:", err);
 });
 
 const sessionOptions = {
   store,
-  secret:process.env.SECRET,
+  secret,
   resave: false,
   saveUninitialized: true,
   cookie: {
@@ -125,12 +129,4 @@ app.all("*", (req, res, next) => {
 app.use((err, req, res, next) => {
   const { statusCode = 500, message = "Something went wrong!" } = err;
   res.status(statusCode).render("error.ejs", { message });
-});
-
-// =====================
-// Start Server
-// =====================
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
 });
