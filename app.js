@@ -3,6 +3,7 @@ if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
 
+const port = process.env.PORT || 4000
 const express = require("express");
 const mongoose = require("mongoose");
 const path = require("path");

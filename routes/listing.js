@@ -1,32 +1,33 @@
 const express = require("express");
 const router = express.Router();
-const wrapAsync = require("../utils/wrapAsync.js");
-const Listing = require("../models/listing.js");
-const { required } = require("joi");
-const {isLoggedIn, isOwner,validateListing} = require("../middleware.js");
-const listingController = require("../controllers/listings.js");
-const multer  = require('multer')
-const {storage} = require("../cloudConfig.js");
-const upload = multer({storage})
+const multer = require("multer");
+const { cloudinary, storage } = require("../cloudConfig");
+const upload = multer({ storage });
 
-//Index Route && Create Route
-router.route("/") 
- .get(wrapAsync(listingController.index))
- .post(isLoggedIn,upload.single("listing[image]"),validateListing,wrapAsync(listingController.createListing));
+const listings = require("../controllers/listings");
+const { isLoggedIn, isOwner } = require("../middleware");
 
+// 🌟 Show all listings (with optional category)
+router.get("/", listings.index);
 
-//New Route
-router.get("/new",isLoggedIn,listingController.renderNewForm );
- 
+// ➕ New listing form
+router.get("/new", isLoggedIn, listings.renderNewForm);
 
-//Show Route,Update Route,Delete Route
-router.route("/:id")
- .get(wrapAsync(listingController.showListing)) 
- .put(isLoggedIn,isOwner,upload.single("listing[image]"),validateListing, wrapAsync(listingController.updateListing))
- .delete(isLoggedIn,isOwner, wrapAsync(listingController.deleteListing));
+// ✏️ Create listing
+router.post("/", isLoggedIn, upload.single("image"), listings.createListing);
 
+// 🔍 Show a single listing
+router.get("/:id", listings.showListing);
 
-//Edit Route
-router.get("/:id/edit",isLoggedIn,isOwner,wrapAsync(listingController.renderEditForm));
+// ✏️ Edit listing form
+router.get("/:id/edit", isLoggedIn, isOwner, listings.renderEditForm);
+
+// ♻️ Update listing
+router.put("/:id", isLoggedIn, isOwner, upload.single("image"), listings.updateListing);
+
+// 🗑️ Delete listing
+router.delete("/:id", isLoggedIn, isOwner, listings.deleteListing);
 
 module.exports = router;
+
+

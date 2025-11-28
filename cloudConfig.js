@@ -8,14 +8,14 @@ cloudinary.config({
 });
 
 const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
-    folder: 'wanderlust_DEV',
-    allowerdFormats: ["png","jpg","jpeg"],
-  },
+    cloudinary: cloudinary,
+    params: {
+        folder: 'wanderlust_DEV',
+        allowed_formats: ["png", "jpg", "jpeg"],   // FIXED SPELLING
+    },
 });
 
-module.exports={
+module.exports = {
     cloudinary,
     storage,
 };

@@ -1,9 +1,9 @@
 <% layout("/layouts/boilerplate") %>
-<div class="row" mt="3">
+<div class="row mt-3">
   <div class="col-8 offset-2">
     <h3>Create a New Listing</h3>
-    <form method="POST" action="/listings" novalidate class="needs-validation" enctype="multipart/form-data">
-
+    <form method="POST" action="/listings" class="needs-validation" enctype="multipart/form-data" novalidate>
+       <input type="hidden" name="_csrf" value="<%= csrfToken %>">
       <div class="mb-3">
         <label for="title" class="form-label">Title</label>
         <input name="listing[title]" placeholder="Add a catchy title" type="text" class="form-control" required />
@@ -18,8 +18,8 @@
 
       <div class="mb-3">
         <label for="image" class="form-label">Upload Listing Image</label>
-        <input name="listing[image]" class="form-control" type="file" />
-        required
+        <!-- ✅ Name fixed to "image" -->
+        <input name="image" class="form-control" type="file" required />
       </div>
 
       <div class="row">
@@ -41,7 +41,7 @@
         <div class="invalid-feedback">Location should be valid</div>
       </div>
 
-      <!-- ✅ New Category Dropdown -->
+      <!-- Category -->
       <div class="mb-3">
         <label for="category" class="form-label">Category</label>
         <select name="listing[category]" id="category" class="form-control" required>
@@ -57,11 +57,8 @@
         </select>
         <div class="invalid-feedback">Please select a category</div>
       </div>
-      <!-- ✅ End of Category -->
 
-      <br />
-      <button class="btn btn-dark add-btn">Add</button>
-      <br /><br />
+      <button class="btn btn-dark add-btn">Add Listing</button>
     </form>
   </div>
 </div>
