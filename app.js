@@ -106,4 +106,10 @@ app.use((err, req, res, next) => {
   res.status(statusCode).render("error", { message, statusCode });
 });
 
-module.exports = app;
+// =====================
+// START SERVER FOR RENDER
+// =====================
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`🚀 Server running on port ${port}`);
+});
