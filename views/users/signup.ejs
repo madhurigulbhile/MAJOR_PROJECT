@@ -1,52 +1,26 @@
-<% layout("/layouts/boilerplate") %>
+<% layout('layouts/boilerplate') %>
 
-<div class="row mt-5">
-  <h1 class="col-6 offset-3 text-center">Sign Up for WanderLust</h1>
-
-  <div class="col-6 offset-3 mt-4">
-    <form action="/signup" method="POST" class="needs-validation" novalidate>
-      
-      <!-- Username -->
-      <div class="mb-3">
-        <label for="username" class="form-label">Username</label>
-        <input 
-          name="username" 
-          id="username" 
-          type="text" 
-          class="form-control" 
-          required
-        />
-        <div class="valid-feedback">Looks good!</div>
-        <div class="invalid-feedback">Please enter a username.</div>
-      </div>
-
-      <!-- Email -->
-      <div class="mb-3">
-        <label for="email" class="form-label">Email</label>
-        <input 
-          name="email" 
-          id="email" 
-          type="email" 
-          class="form-control" 
-          required
-        />
-        <div class="invalid-feedback">Please enter a valid email.</div>
-      </div>
-
-      <!-- Password -->
-      <div class="mb-3">
-        <label for="password" class="form-label">Password</label>
-        <input 
-          name="password" 
-          id="password" 
-          type="password" 
-          class="form-control" 
-          required
-        />
-        <div class="invalid-feedback">Please enter a password.</div>
-      </div>
-
-      <button type="submit" class="btn btn-success w-100">Sign Up</button>
-    </form>
+<h1 class="text-center">Sign Up</h1>
+<form action="/Signup" method="POST" class="col-6 offset-3 mt-4">
+  <div class="mb-3">
+    <label for="username" class="form-label">Username</label>
+    <input type="text" class="form-control" name="username" id="username" required>
   </div>
-</div>
+  <div class="mb-3">
+    <label for="email" class="form-label">Email</label>
+    <input type="email" class="form-control" name="email" id="email" required>
+  </div>
+  <div class="mb-3">
+    <label for="firstName" class="form-label">First Name</label>
+    <input type="text" class="form-control" name="firstName" id="firstName">
+  </div>
+  <div class="mb-3">
+    <label for="lastName" class="form-label">Last Name</label>
+    <input type="text" class="form-control" name="lastName" id="lastName">
+  </div>
+  <div class="mb-3">
+    <label for="password" class="form-label">Password</label>
+    <input type="password" class="form-control" name="password" id="password" required>
+  </div>
+  <button type="submit" class="btn btn-primary">Sign Up</button>
+</form>
