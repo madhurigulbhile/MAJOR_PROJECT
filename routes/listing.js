@@ -14,7 +14,12 @@ router.get("/", listings.index);
 router.get("/new", isLoggedIn, listings.renderNewForm);
 
 // ➕ Create Listing
-router.post("/", isLoggedIn, upload.single("image"), listings.createListing);
+router.post(
+  "/",
+  isLoggedIn,
+  upload.array("image"),
+  listings.createListing
+);
 
 // 🔍 Show single listing
 router.get("/:id", listings.showListing);

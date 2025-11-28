@@ -2,6 +2,9 @@ const Listing = require("../models/listing");
 const { getCoordinates } = require("../utils/geocode");
 const catchAsync = require("../utils/catchAsync");
 const ExpressError = require("../utils/ExpressError");
+// controllers/listings.js
+const geocode = require('../utils/geocode'); // make sure the path matches
+
 
 // 🌟 Show all listings
 module.exports.index = catchAsync(async (req, res) => {
@@ -35,11 +38,18 @@ module.exports.showListing = catchAsync(async (req, res) => {
 // ➕ Create a new listing
 module.exports.createListing = catchAsync(async (req, res) => {
   const { location, country } = req.body.listing;
-  const coordinates = await getCoordinates(location, country);
 
+  // ⭐ 1. Combine location + country for Google search
+  const fullAddress = `${location}, ${country}`;
+
+  // ⭐ 2. Get coordinates using Google Maps API
+  const coordinates = await geocode(fullAddress); // returns { lat, lng }
+
+  // ⭐ 3. Create new listing
   const newListing = new Listing(req.body.listing);
   newListing.owner = req.user._id;
 
+  // ⭐ 4. Image upload (single image)
   if (req.file) {
     newListing.image = {
       url: req.file.path,
@@ -47,15 +57,18 @@ module.exports.createListing = catchAsync(async (req, res) => {
     };
   }
 
+  // ⭐ 5. Save geometry in [lng, lat] format (GeoJSON)
   newListing.geometry = {
     type: "Point",
-    coordinates,
+    coordinates: [coordinates.lng, coordinates.lat],
   };
 
   await newListing.save();
+
   req.flash("success", "✅ New Listing Created!");
   res.redirect(`/listings/${newListing._id}`);
 });
+
 
 // ✏️ Render edit form
 module.exports.renderEditForm = catchAsync(async (req, res) => {

@@ -1,10 +1,11 @@
 const axios = require("axios");
 
-// Function to get coordinates from Google Maps API
 const geocode = async (address) => {
   try {
-    const apiKey = process.env.GOOGLE_MAPS_API_KEY; // store in env variable
-    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${apiKey}`;
+    const apiKey = process.env.GOOGLE_MAPS_API_KEY;
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+      address
+    )}&key=${apiKey}`;
 
     const response = await axios.get(url);
 
@@ -12,11 +13,10 @@ const geocode = async (address) => {
       throw new Error("Location not found");
     }
 
-    const location = response.data.results[0].geometry.location; // { lat, lng }
-    return location;
-  } catch (err) {
-    console.error("Geocoding error:", err.message);
-    throw err;
+    return response.data.results[0].geometry.location; // { lat, lng }
+  } catch (error) {
+    console.error("Geocode Error:", error.message);
+    throw error;
   }
 };
 
