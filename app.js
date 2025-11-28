@@ -12,11 +12,12 @@ const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const csrf = require("csurf");
-const connectDB = require("./db");
 
+const connectDB = require("./db"); // MongoDB connection
 const ExpressError = require("./utils/ExpressError");
 const User = require("./models/user");
 
+// Routes
 const listingRouter = require("./routes/listing");
 const reviewRouter = require("./routes/review");
 const userRouter = require("./routes/user");
@@ -24,7 +25,7 @@ const userRouter = require("./routes/user");
 const app = express();
 
 // =====================
-// MongoDB Atlas Connection
+// Connect to MongoDB
 // =====================
 connectDB();
 
@@ -72,7 +73,7 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 // =====================
-// CSRF Middleware
+// CSRF Protection & Global Variables
 // =====================
 app.use(csrf());
 app.use((req, res, next) => {
@@ -105,7 +106,6 @@ app.use((err, req, res, next) => {
   if (process.env.NODE_ENV !== "production") console.error(err);
   res.status(statusCode).render("error", { message, statusCode });
 });
-
 // =====================
 // START SERVER FOR RENDER
 // =====================
