@@ -1,20 +1,43 @@
-// Example starter JavaScript for disabling form submissions if there are invalid fields
-(function () {
-  'use strict'
+// =====================
+// Bootstrap Form Validation
+// =====================
+document.addEventListener('DOMContentLoaded', () => {
+  'use strict';
+  
+  const forms = document.querySelectorAll('.needs-validation');
+  
+  Array.prototype.slice.call(forms).forEach(form => {
+    form.addEventListener('submit', event => {
+      if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      form.classList.add('was-validated');
+    }, false);
+  });
+});
 
-  // Fetch all the forms we want to apply custom Bootstrap validation styles to
-  var forms = document.querySelectorAll('.needs-validation')
+// =====================
+// Google Maps Initialization
+// =====================
+function initMap() {
+  const mapElement = document.getElementById('map');
+  if (!mapElement) return; // Only run if #map exists on the page
 
-  // Loop over them and prevent submission
-  Array.prototype.slice.call(forms)
-    .forEach(function (form) {
-      form.addEventListener('submit', function (event) {
-        if (!form.checkValidity()) {
-          event.preventDefault()
-          event.stopPropagation()
-        }
+  // Coordinates are passed as a global variable from EJS
+  const coordinates = window.coordinates || [0, 0]; // [lng, lat]
+  const location = { lat: coordinates[1] || 0, lng: coordinates[0] || 0 };
 
-        form.classList.add('was-validated')
-      }, false)
-    })
-})()
+  const map = new google.maps.Map(mapElement, {
+    zoom: 12,
+    center: location,
+  });
+
+  new google.maps.Marker({
+    position: location,
+    map: map,
+  });
+}
+
+// If you want to load the map dynamically, call initMap in your EJS like:
+// <script async defer src="https://maps.googleapis.com/maps/api/js?key=<%= mapApiKey %>&callback=initMap"></script>

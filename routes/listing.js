@@ -1,25 +1,25 @@
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
-const { cloudinary, storage } = require("../cloudConfig");
+const { storage } = require("../cloudConfig");
 const upload = multer({ storage });
 
 const listings = require("../controllers/listings");
 const { isLoggedIn, isOwner } = require("../middleware");
 
-// 🌟 Show all listings (with optional category)
+// 🌟 Show all listings
 router.get("/", listings.index);
 
-// ➕ New listing form
+// ➕ New Listing Form
 router.get("/new", isLoggedIn, listings.renderNewForm);
 
-// ✏️ Create listing
+// ➕ Create Listing
 router.post("/", isLoggedIn, upload.single("image"), listings.createListing);
 
-// 🔍 Show a single listing
+// 🔍 Show single listing
 router.get("/:id", listings.showListing);
 
-// ✏️ Edit listing form
+// ✏️ Edit form
 router.get("/:id/edit", isLoggedIn, isOwner, listings.renderEditForm);
 
 // ♻️ Update listing
@@ -29,5 +29,4 @@ router.put("/:id", isLoggedIn, isOwner, upload.single("image"), listings.updateL
 router.delete("/:id", isLoggedIn, isOwner, listings.deleteListing);
 
 module.exports = router;
-
 

@@ -1,4 +1,5 @@
 <% layout("/layouts/boilerplate") %>
+
 <div class="row mt-3">
   <div class="col-8 offset-2">
     <h3>Edit Listing</h3>
@@ -10,6 +11,9 @@
       class="needs-validation"
       enctype="multipart/form-data"
     >
+      <!-- CSRF Token -->
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
       <div class="mb-3">
         <label for="title" class="form-label">Title</label>
         <input
@@ -17,7 +21,7 @@
           type="text"
           class="form-control"
           id="title"
-          value="<%= listing.title %>"
+          value="<%= listing.title || '' %>"
           required
         />
         <div class="valid-feedback">Title looks good!</div>
@@ -31,26 +35,16 @@
           id="description"
           rows="4"
           required
-        ><%= listing.description %></textarea>
+        ><%= listing.description || '' %></textarea>
         <div class="invalid-feedback">Please enter a short description</div>
       </div>
 
       <div class="mb-3">
         <label for="image" class="form-label">Upload Listing Image</label>
-        <input
-          name="listing[image]"
-          class="form-control"
-          type="file"
-          id="image"
-        />
+        <input name="image" class="form-control" type="file" id="image" />
         <% if (listing.image && listing.image.url) { %>
           <div class="mt-3">
-            <img
-              src="<%= listing.image.url %>"
-              alt="Current Image"
-              class="img-thumbnail"
-              style="height: 200px;"
-            />
+            <img src="<%= listing.image.url %>" alt="Current Image" class="img-thumbnail" style="height: 200px;" />
           </div>
         <% } %>
       </div>
@@ -58,71 +52,34 @@
       <div class="row">
         <div class="mb-3 col-md-4">
           <label for="price" class="form-label">Price</label>
-          <input
-            name="listing[price]"
-            type="number"
-            class="form-control"
-            id="price"
-            value="<%= listing.price %>"
-            required
-          />
+          <input name="listing[price]" type="number" class="form-control" id="price" value="<%= listing.price || '' %>" required/>
           <div class="invalid-feedback">Price should be valid</div>
         </div>
-
         <div class="mb-3 col-md-8">
           <label for="country" class="form-label">Country</label>
-          <input
-            name="listing[country]"
-            type="text"
-            class="form-control"
-            id="country"
-            value="<%= listing.country %>"
-            required
-          />
+          <input name="listing[country]" type="text" class="form-control" id="country" value="<%= listing.country || '' %>" required/>
           <div class="invalid-feedback">Country name should be valid</div>
         </div>
       </div>
 
       <div class="mb-3">
         <label for="location" class="form-label">Location</label>
-        <input
-          name="listing[location]"
-          type="text"
-          class="form-control"
-          id="location"
-          value="<%= listing.location %>"
-          required
-        />
+        <input name="listing[location]" type="text" class="form-control" id="location" value="<%= listing.location || '' %>" required/>
         <div class="invalid-feedback">Location should be valid</div>
       </div>
 
-      <!-- 🟢 Category Dropdown -->
       <div class="mb-3">
         <label for="category" class="form-label">Category</label>
-        <select
-          name="listing[category]"
-          id="category"
-          class="form-control"
-          required
-        >
+        <select name="listing[category]" id="category" class="form-control" required>
           <option value="">-- Select category --</option>
-          <option value="Trending" <%= listing.category === "Trending" ? "selected" : "" %>>Trending</option>
-          <option value="Rooms" <%= listing.category === "Rooms" ? "selected" : "" %>>Rooms</option>
-          <option value="Iconic Cities" <%= listing.category === "Iconic Cities" ? "selected" : "" %>>Iconic Cities</option>
-          <option value="Mountains" <%= listing.category === "Mountains" ? "selected" : "" %>>Mountains</option>
-          <option value="Castles" <%= listing.category === "Castles" ? "selected" : "" %>>Castles</option>
-          <option value="Amazing Pools" <%= listing.category === "Amazing Pools" ? "selected" : "" %>>Amazing Pools</option>
-          <option value="Camping" <%= listing.category === "Camping" ? "selected" : "" %>>Camping</option>
-          <option value="Farms" <%= listing.category === "Farms" ? "selected" : "" %>>Farms</option>
-          <option value="Arctic" <%= listing.category === "Arctic" ? "selected" : "" %>>Arctic</option>
+          <% categories.forEach(cat => { %>
+            <option value="<%= cat %>" <%= listing.category === cat ? "selected" : "" %>><%= cat %></option>
+          <% }) %>
         </select>
         <div class="invalid-feedback">Please select a category</div>
       </div>
-      <!-- 🟢 End Category -->
 
-      <br />
       <button class="btn btn-dark w-100">Save Changes</button>
-      <br /><br />
     </form>
   </div>
 </div>
