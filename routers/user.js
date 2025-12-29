@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const wrapAsync = require("../utils/wrapAsync");
+const wrapAsync = require("../utils/wrapAsync.js");
 const passport = require("passport");
 const {
   saveRedirectUrl,
@@ -9,9 +9,9 @@ const {
   validateUser,
   varifyEmail,
   varifyUserEmail,
-} = require("../middleware");
+} = require("../middleware.js");
 
-const userController = require("../controllers/users");
+const userController = require("../controllers/users.js");
 
 const multer = require("multer"); //install multer package in npm || multipart/form-data type receive and paras
 // const upload = multer({ dest: 'uploads/' })  //uploads folder me save karega
