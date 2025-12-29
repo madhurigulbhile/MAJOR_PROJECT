@@ -1,85 +1,64 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-const Review = require("./review");
+const Review = require("./review.js");
 
-const listingSchema = new Schema(
-  {
-    title: {
-      type: String,
-      required: true,
-    },
-    description: String,
-    image: {
-      url: String,
-      filename: String,
-    },
-    price: {
-      type: Number,
-      required: true,
-      min: 0,
-    },
-    location: {
-      type: String,
-      required: true,
-    },
-    country: {
-      type: String,
-      required: true,
-    },
-    reviews: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Review",
-      },
-    ],
-    owner: {
+const listingSchema = new Schema({
+  title: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  description: String,
+  image: {
+    url: String,
+    filename: String,
+  },
+  price: Number,
+  location: String,
+  country: String,
+  reviews: [
+    {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: "Review",
     },
-    // GeoJSON coordinates for maps
-    geometry: {
-      type: {
-        type: String,
-        enum: ["Point"], // must be "Point"
-        required: true,
-      },
-      coordinates: {
-        type: [Number], // [longitude, latitude]
-        required: true,
-      },
-    },
-    // Category enum
-    category: {
+  ],
+  owner: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+  },
+  geometry: {
+    type: {
       type: String,
-      enum: [
-        "Trending",
-        "Rooms",
-        "Iconic Cities",
-        "Mountains",
-        "Castles",
-        "Amazing Pools",
-        "Camping",
-        "Farms",
-        "Arctic",
-      ],
+      enum: ["Point"],
+      required: true,
+    },
+    coordinates: {
+      type: [Number],
       required: true,
     },
   },
-  { timestamps: true } // adds createdAt and updatedAt
-);
+  category: {
+    type: [String],
+  },
+});
 
-// Delete associated reviews when a listing is deleted
-listingSchema.post("findOneAndDelete", async function (doc) {
-  if (doc) {
-    await Review.deleteMany({
-      _id: { $in: doc.reviews },
-    });
+// Define post middleware to delete all reviews in listing
+listingSchema.post("findOneAndDelete", async (listing) => {
+  if (listing) {
+    await Review.deleteMany({ _id: { $in: listing.reviews } });
   }
 });
 
-// Static helper to get categories
-listingSchema.statics.getCategories = function () {
-  return this.schema.path("category").enumValues;
-};
+// Define pre middleware for deleteMany
+listingSchema.pre(
+  "deleteMany",
+  { document: false, query: true },
+  async function () {
+    const listings = await this.model.find(this.getFilter()); // Get listings being deleted
+    const reviewIds = listings.flatMap((listing) => listing.reviews); // Extract review IDs
+    await Review.deleteMany({ _id: { $in: reviewIds } }); // Delete associated reviews
+  }
+);
 
-module.exports = mongoose.model("Listing", listingSchema);
+const Listing = mongoose.model("Listing", listingSchema);
+module.exports = Listing;

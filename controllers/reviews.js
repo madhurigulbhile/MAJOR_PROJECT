@@ -1,35 +1,23 @@
-const Listing = require("../models/listing");
-const Review = require("../models/review");
-const catchAsync = require("../utils/catchAsync");
-const ExpressError = require("../utils/ExpressError");
+const Listing = require("../models/listing.js");
+const Review = require("../models/review.js");
 
-// ➕ Create Review
-module.exports.createReview = catchAsync(async (req, res) => {
-  const listing = await Listing.findById(req.params.id);
-  if (!listing) throw new ExpressError(404, "Listing not found");
-
-  const newReview = new Review(req.body.review);
+module.exports.createReview = async (req, res, next) => {
+  let listing = await Listing.findById(req.params.id);
+  let newReview = new Review(req.body.review);
   newReview.author = req.user._id;
-
+  newReview.listing = listing._id; //add listing id in review
   listing.reviews.push(newReview);
-
   await newReview.save();
   await listing.save();
+  console.log("new review saved");
+  req.flash("success", "New Review Created!");
+  res.redirect(`/listings/${req.params.id}`);
+};
 
-  req.flash("success", "✅ New Review Created!");
-  res.redirect(`/listings/${listing._id}`);
-});
-
-// 🗑️ Delete Review
-module.exports.deleteReview = catchAsync(async (req, res) => {
-  const { id, reviewId } = req.params;
-
-  const listing = await Listing.findById(id);
-  if (!listing) throw new ExpressError(404, "Listing not found");
-
-  await Listing.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
+module.exports.destroyReview = async (req, res, next) => {
+  let { id, reviewId } = req.params;
+  await Listing.findByIdAndUpdate(id, { $pull: { reviews: reviewId } }); //pull -> remove (review delete by id in listing)
   await Review.findByIdAndDelete(reviewId);
-
-  req.flash("success", "✅ Review Deleted!");
+  req.flash("succes", "Review Deleted!");
   res.redirect(`/listings/${id}`);
-});
+};
